@@ -609,6 +609,37 @@ export function DownloadDialog({ onDownloadsChanged }: DownloadDialogProps) {
 							!playlistInfo &&
 							!playlistPreviewLoading && (
 								<div className="flex items-center gap-2">
+									<div className="relative w-[320px]">
+										<Input
+											className="h-8 pr-8 text-xs"
+											onChange={(event) => setPlaylistUrl(event.target.value)}
+											placeholder={t("download.urlPlaceholder")}
+											value={playlistUrl}
+										/>
+										<div className="absolute top-1/2 right-1 -translate-y-1/2">
+											<Button
+												className="h-6 w-6"
+												onClick={async () => {
+													if (!navigator.clipboard?.readText) {
+														return;
+													}
+													try {
+														const clipboardText =
+															await navigator.clipboard.readText();
+														if (clipboardText.trim()) {
+															setPlaylistUrl(clipboardText.trim());
+														}
+													} catch {
+														// ignore
+													}
+												}}
+												size="icon"
+												variant="ghost"
+											>
+												<FolderOpen className="h-3 w-3 text-muted-foreground" />
+											</Button>
+										</div>
+									</div>
 									<Checkbox
 										checked={advancedOptionsOpen}
 										id={advancedOptionsId}
