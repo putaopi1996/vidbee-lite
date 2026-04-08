@@ -1,0 +1,41 @@
+# VidBee 一键部署配置
+# 使用预构建的 Docker 镜像，无需在服务器上编译
+#
+# 部署步骤:
+#   1. 将此文件和 .env 文件复制到服务器
+#   2. 修改 .env 中的配置
+#   3. docker compose -f docker-compose.deploy.yml up -d
+
+services:
+  api:
+    # ⬇️ 改成你自己的 GitHub 用户名/仓库名
+    image: ghcr.io/YOUR_GITHUB_USERNAME/vidbee/api:latest
+    environment:
+      VIDBEE_API_HOST: 0.0.0.0
+      VIDBEE_API_PORT: 3100
+      VIDBEE_DOWNLOAD_DIR: /data/downloads
+      VIDBEE_HISTORY_STORE_PATH: /data/vidbee/vidbee.db
+    volumes:
+      - vidbee-downloads:/data/downloads
+      - vidbee-data:/data/vidbee
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3100/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    # ⬇️ 改成你自己的 GitHub 用户名/仓库名
+    image: ghcr.io/YOUR_GITHUB_USERNAME/vidbee/web:latest
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  vidbee-downloads:
+  vidbee-data:
