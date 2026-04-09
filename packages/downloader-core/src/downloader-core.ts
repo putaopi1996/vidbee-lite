@@ -711,6 +711,11 @@ export class DownloaderCore extends EventEmitter {
     }
 
     const createdEntries: PlaylistDownloadResult['entries'] = []
+    
+    const runtimeSettings = this.resolveRuntimeSettings(input.settings)
+    const baseDownloadDir = input.customDownloadPath?.trim() || runtimeSettings.downloadPath?.trim() || this.downloadDir
+    const safePlaylistTitle = playlist.title.replace(/[<>:"/\\|?*]+/g, '_').replace(/^[.\s]+|[.\s]+$/g, '') || 'Playlist'
+    const playlistFolder = path.join(baseDownloadDir, safePlaylistTitle)
 
     for (const entry of selectedEntries) {
       const download = await this.createDownload({
@@ -725,7 +730,7 @@ export class DownloaderCore extends EventEmitter {
         format: input.format,
         audioFormat: input.audioFormat,
         audioFormatIds: input.audioFormatIds,
-        customDownloadPath: input.customDownloadPath,
+        customDownloadPath: playlistFolder,
         customFilenameTemplate: input.customFilenameTemplate,
         settings: input.settings
       })
