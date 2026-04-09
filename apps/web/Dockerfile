@@ -34,8 +34,12 @@ RUN pnpm --filter ./apps/web run build
 # ── Stage 2: Serve with nginx (~7 MB image) ──────────────────────────
 FROM nginx:alpine
 
+RUN apk update && apk add --no-cache apache2-utils
+
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY apps/web/99-auth.sh /docker-entrypoint.d/99-auth.sh
+RUN chmod +x /docker-entrypoint.d/99-auth.sh
 
 EXPOSE 3000
 
