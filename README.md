@@ -1,7 +1,10 @@
+### 修改内容
 1.精简了前端改为静态css，原来的docker部署时web占据内存太多。
+
 2.优化了下载核心，支持自动创建子文件夹。
+
 3.前端网页访问需要密码验证。
-### 📦 快速部署 (Docker)
+### 快速部署 (Docker)
 #### 1. 准备环境
 确保你的服务器已安装 `Docker` 和 `Docker Compose`。
 #### 2. 下载配置
@@ -15,5 +18,3 @@
 在目录下运行以下命令：
 ```bash
 docker compose -f docker-compose.deploy.yml up -d
-
-  
