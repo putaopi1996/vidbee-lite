@@ -19,7 +19,7 @@ COPY packages/downloader-core/package.json packages/downloader-core/package.json
 RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile
 
 COPY apps/api apps/api
-COPY apps/desktop/resources/drizzle apps/desktop/resources/drizzle
+COPY apps/api/resources/drizzle apps/api/resources/drizzle
 COPY packages/db packages/db
 COPY packages/downloader-core packages/downloader-core
 
