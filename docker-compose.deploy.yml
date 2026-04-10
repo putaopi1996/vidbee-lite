@@ -6,7 +6,7 @@
 
 services:
   api:
-    image: ghcr.io/putaopi1996/vidbee/api:latest
+    image: ghcr.io/putaopi1996/vidbee-api:latest
     environment:
       - VIDBEE_API_HOST=0.0.0.0
       - VIDBEE_API_PORT=3100
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   web:
-    image: ghcr.io/putaopi1996/vidbee/web:latest
+    image: ghcr.io/putaopi1996/vidbee-web:latest
     depends_on:
       api:
         condition: service_healthy
