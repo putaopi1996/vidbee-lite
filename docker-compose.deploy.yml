@@ -1,5 +1,4 @@
-# VidBee 一键部署配置 (生产推荐)
-# 使用说明:
+# VidBee-lite使用说明:
 #   1. 将此文件复制到你的服务器目录
 #   2. (可选) 修改下面的 VIDBEE_AUTH_USER 和 VIDBEE_AUTH_PASSWORD 开启网页密码
 #   3. 执行: docker compose -f docker-compose.deploy.yml up -d
@@ -27,6 +26,7 @@ services:
     deploy:
       resources:
         limits:
+        # 下载内核资源限制
           cpus: '0.8'
           memory: 800M
     restart: unless-stopped
@@ -38,6 +38,7 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+      # 网页端访问地址
     environment:
       # 网页访问账号密码，留空则不开启验证
       - VIDBEE_AUTH_USER=admin
@@ -45,6 +46,7 @@ services:
     deploy:
       resources:
         limits:
+        # 网页端资源限制
           cpus: '0.2'
           memory: 200M
     restart: unless-stopped
