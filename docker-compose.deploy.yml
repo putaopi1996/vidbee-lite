@@ -8,8 +8,7 @@
 
 services:
   api:
-    # ⬇️ 改成你自己的 GitHub 用户名/仓库名
-    image: ghcr.io/YOUR_GITHUB_USERNAME/vidbee/api:latest
+    image: ghcr.io/putaopi1996/vidbee/api:latest
     environment:
       VIDBEE_API_HOST: 0.0.0.0
       VIDBEE_API_PORT: 3100
@@ -27,8 +26,7 @@ services:
     restart: unless-stopped
 
   web:
-    # ⬇️ 改成你自己的 GitHub 用户名/仓库名
-    image: ghcr.io/YOUR_GITHUB_USERNAME/vidbee/web:latest
+    image: ghcr.io/putaopi1996/vidbee/web:latest
     depends_on:
       api:
         condition: service_healthy
