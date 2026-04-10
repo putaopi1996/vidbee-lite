@@ -118,7 +118,8 @@ export const formatYtDlpCommand = (args: string[]): string => {
   return `yt-dlp ${quoted.join(' ')}`
 }
 
-export const resolveFfmpegLocationFromPath = (ffmpegPath: string): string => path.dirname(ffmpegPath)
+export const resolveFfmpegLocationFromPath = (ffmpegPath: string): string =>
+  path.dirname(ffmpegPath)
 
 export const resolveVideoFormatSelector = (options: YtDlpDownloadOptions): string => {
   const format = options.format
@@ -205,7 +206,8 @@ export const buildDownloadArgs = (
   const embedChapters = settings.embedChapters ?? true
   const browserForCookies = trim(settings.browserForCookies)
   const cookiesPath = trim(settings.cookiesPath)
-  const hasSubtitleAuth = (browserForCookies && browserForCookies !== 'none') || Boolean(cookiesPath)
+  const hasSubtitleAuth =
+    (browserForCookies && browserForCookies !== 'none') || Boolean(cookiesPath)
   const shouldAttemptSubtitles = !isBilibiliUrl(options.url) || hasSubtitleAuth
 
   if (shouldAttemptSubtitles) {

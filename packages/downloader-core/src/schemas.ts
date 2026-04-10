@@ -61,13 +61,7 @@ export const DownloadRuntimeSettingsSchema = z.object({
   embedChapters: z.boolean().optional()
 })
 
-export const OneClickQualityPresetSchema = z.enum([
-  'best',
-  'good',
-  'normal',
-  'bad',
-  'worst'
-])
+export const OneClickQualityPresetSchema = z.enum(['best', 'good', 'normal', 'bad', 'worst'])
 
 export const ThemeValueSchema = z.enum(['light', 'dark', 'system'])
 

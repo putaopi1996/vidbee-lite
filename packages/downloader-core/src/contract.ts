@@ -2,12 +2,13 @@ import { oc } from '@orpc/contract'
 import {
   CancelDownloadInputSchema,
   CancelDownloadOutputSchema,
-  DirectoryListInputSchema,
   CreateDownloadInputSchema,
   CreateDownloadOutputSchema,
+  DirectoryListInputSchema,
   FileExistsOutputSchema,
   FileOperationOutputSchema,
   FilePathInputSchema,
+  GetWebSettingsOutputSchema,
   ListDirectoriesOutputSchema,
   ListDownloadsOutputSchema,
   ListHistoryOutputSchema,
@@ -20,7 +21,6 @@ import {
   RemoveHistoryOutputSchema,
   SetWebSettingsInputSchema,
   StatusOutputSchema,
-  GetWebSettingsOutputSchema,
   UploadSettingsFileInputSchema,
   UploadSettingsFileOutputSchema,
   VideoInfoInputSchema,
@@ -42,20 +42,14 @@ export const downloaderContract = {
   history: {
     list: oc.output(ListHistoryOutputSchema),
     removeItems: oc.input(RemoveHistoryItemsInputSchema).output(RemoveHistoryOutputSchema),
-    removeByPlaylist: oc
-      .input(RemoveHistoryByPlaylistInputSchema)
-      .output(RemoveHistoryOutputSchema)
+    removeByPlaylist: oc.input(RemoveHistoryByPlaylistInputSchema).output(RemoveHistoryOutputSchema)
   },
   files: {
     exists: oc.input(FilePathInputSchema).output(FileExistsOutputSchema),
-    listDirectories: oc
-      .input(DirectoryListInputSchema)
-      .output(ListDirectoriesOutputSchema),
+    listDirectories: oc.input(DirectoryListInputSchema).output(ListDirectoriesOutputSchema),
     openFile: oc.input(FilePathInputSchema).output(FileOperationOutputSchema),
     openFileLocation: oc.input(FilePathInputSchema).output(FileOperationOutputSchema),
-    copyFileToClipboard: oc
-      .input(FilePathInputSchema)
-      .output(FileOperationOutputSchema),
+    copyFileToClipboard: oc.input(FilePathInputSchema).output(FileOperationOutputSchema),
     deleteFile: oc.input(FilePathInputSchema).output(FileOperationOutputSchema),
     uploadSettingsFile: oc
       .input(UploadSettingsFileInputSchema)

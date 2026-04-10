@@ -182,7 +182,7 @@ const resolveBundledFfmpegLocation = (): string | undefined => {
     const candidateDir = path.join(resourcesDir, 'ffmpeg')
     const ffmpegPath = path.join(candidateDir, ffmpegBinaryName)
     const ffprobePath = path.join(candidateDir, ffprobeBinaryName)
-    if (!fs.existsSync(ffmpegPath) || !fs.existsSync(ffprobePath)) {
+    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
       continue
     }
     ensureExecutable(ffmpegPath)
@@ -229,7 +229,7 @@ const resolveFfmpegLocation = (ytDlpPath?: string): string | undefined => {
   const resolveFromDirectory = (directory: string): string | undefined => {
     const ffmpegPath = path.join(directory, ffmpegBinaryName)
     const ffprobePath = path.join(directory, ffprobeBinaryName)
-    if (!fs.existsSync(ffmpegPath) || !fs.existsSync(ffprobePath)) {
+    if (!(fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath))) {
       return undefined
     }
     ensureExecutable(ffmpegPath)
@@ -649,14 +649,18 @@ export class DownloaderCore extends EventEmitter {
     }
 
     const raw = await this.runJsonCommand<RawPlaylistInfo>(
-      buildPlaylistInfoArgs(target, this.resolveRuntimeSettings(runtimeSettings), this.jsRuntimeArgs)
+      buildPlaylistInfoArgs(
+        target,
+        this.resolveRuntimeSettings(runtimeSettings),
+        this.jsRuntimeArgs
+      )
     )
 
     const rawEntries = Array.isArray(raw.entries) ? raw.entries : []
     const entries = rawEntries
       .map((entry, index) => {
         const resolvedUrl = resolvePlaylistEntryUrl(entry)
-        if (!resolvedUrl || !isHttpUrl(resolvedUrl)) {
+        if (!(resolvedUrl && isHttpUrl(resolvedUrl))) {
           return null
         }
 
@@ -711,10 +715,12 @@ export class DownloaderCore extends EventEmitter {
     }
 
     const createdEntries: PlaylistDownloadResult['entries'] = []
-    
+
     const runtimeSettings = this.resolveRuntimeSettings(input.settings)
-    const baseDownloadDir = input.customDownloadPath?.trim() || runtimeSettings.downloadPath?.trim() || this.downloadDir
-    const safePlaylistTitle = playlist.title.replace(/[<>:"/\\|?*]+/g, '_').replace(/^[.\s]+|[.\s]+$/g, '') || 'Playlist'
+    const baseDownloadDir =
+      input.customDownloadPath?.trim() || runtimeSettings.downloadPath?.trim() || this.downloadDir
+    const safePlaylistTitle =
+      playlist.title.replace(/[<>:"/\\|?*]+/g, '_').replace(/^[.\s]+|[.\s]+$/g, '') || 'Playlist'
     const playlistFolder = path.join(baseDownloadDir, safePlaylistTitle)
 
     for (const entry of selectedEntries) {

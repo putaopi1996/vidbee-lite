@@ -34,9 +34,7 @@ export const buildFileNameCandidates = (
     }
   }
 
-  return savedNameCandidates.length > 0
-    ? savedNameCandidates
-    : [`${safeTitle}.${format}`]
+  return savedNameCandidates.length > 0 ? savedNameCandidates : [`${safeTitle}.${format}`]
 }
 
 export const buildFilePathCandidates = (
