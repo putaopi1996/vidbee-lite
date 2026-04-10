@@ -36,7 +36,7 @@ export const buildFileNameCandidates = (
 
   return savedNameCandidates.length > 0
     ? savedNameCandidates
-    : [`${safeTitle} via VidBee.${format}`, `${safeTitle}.${format}`]
+    : [`${safeTitle}.${format}`]
 }
 
 export const buildFilePathCandidates = (
