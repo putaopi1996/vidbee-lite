@@ -31,8 +31,10 @@ ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV NODE_ENV=production
 
-# Install runtime dependencies only
-RUN apk add --no-cache yt-dlp ffmpeg python3
+# Install runtime dependencies only (fetch absolute latest yt-dlp)
+RUN apk add --no-cache ffmpeg python3 curl && \
+    curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp && \
+    chmod a+rx /usr/bin/yt-dlp
 
 WORKDIR /app
 

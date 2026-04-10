@@ -12,6 +12,8 @@ on:
       - 'pnpm-workspace.yaml'
       - 'package.json'
       - '.github/workflows/docker-publish.yml'
+  schedule:
+    - cron: '0 0 * * 0' # Automatically rebuild every Sunday midnight to fetch latest yt-dlp
   workflow_dispatch:
 
 jobs:
