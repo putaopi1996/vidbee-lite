@@ -1,5 +1,5 @@
 # ── Stage 1: Build static assets ──────────────────────────────────────
-FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}

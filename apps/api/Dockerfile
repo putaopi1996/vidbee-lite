@@ -1,5 +1,5 @@
 # ── Stage 1: Build ───────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
@@ -25,7 +25,7 @@ COPY packages/downloader-core packages/downloader-core
 RUN pnpm --filter ./apps/api run build
 
 # ── Stage 2: Production ──────────────────────────────────────────────
-FROM node:22-alpine
+FROM node:20-alpine
 
 ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
