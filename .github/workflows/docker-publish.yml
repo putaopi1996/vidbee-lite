@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - 'apps/api/**'
-      - 'apps/desktop/resources/drizzle/**'
       - 'apps/web/**'
       - 'packages/**'
       - 'pnpm-lock.yaml'
@@ -53,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/vidbee-${{ matrix.image_suffix }}
+          images: ghcr.io/${{ github.repository_owner }}/vidbee/${{ matrix.image_suffix }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=short
