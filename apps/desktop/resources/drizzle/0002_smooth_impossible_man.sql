@@ -1,1 +1,0 @@
-ALTER TABLE `download_history` ADD `yt_dlp_log` text;
