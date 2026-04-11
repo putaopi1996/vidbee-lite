@@ -1,5 +1,5 @@
-# ── Stage 1: Build ───────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+# ── Stage 1: Build (Native Platform) ──────────────────────────────────
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
@@ -7,29 +7,58 @@ RUN corepack enable
 
 WORKDIR /app
 
-# Install build tools for native modules (better-sqlite3)
-RUN apk add --no-cache python3 make g++
-
-# Copy lockfile and workspace config
+# 1. Copy workspace configuration
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
-# Copy package.json files for workspace resolution
+# 2. Copy all package.json files from the workspace (required for pnpm validation)
 COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/desktop/package.json apps/desktop/package.json
+COPY apps/docs/package.json apps/docs/package.json
+COPY apps/extension/package.json apps/extension/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/downloader-core/package.json packages/downloader-core/package.json
+COPY packages/i18n/package.json packages/i18n/package.json
+COPY packages/ui/package.json packages/ui/package.json
 
-# Install all dependencies
-RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile
+# 3. Install dependencies (native x64 platform for speed and stability)
+RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile --ignore-scripts
 
-# Copy source code and build
+# 4. Copy source code and build
 COPY apps/api apps/api
 COPY packages/db packages/db
 COPY packages/downloader-core packages/downloader-core
 
-# Build the API
 RUN pnpm --filter ./apps/api run build
 
-# ── Stage 2: Production ──────────────────────────────────────────────
+# ── Stage 2: Prod-deps (Target Platform) ──────────────────────────────
+FROM node:20-alpine AS prod-deps
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=${PNPM_HOME}:${PATH}
+RUN corepack enable
+
+WORKDIR /app
+
+# Install build tools for better-sqlite3
+RUN apk add --no-cache python3 make g++
+
+# Copy same set of package.json files
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/desktop/package.json apps/desktop/package.json
+COPY apps/docs/package.json apps/docs/package.json
+COPY apps/extension/package.json apps/extension/package.json
+COPY packages/db/package.json packages/db/package.json
+COPY packages/downloader-core/package.json packages/downloader-core/package.json
+COPY packages/i18n/package.json packages/i18n/package.json
+COPY packages/ui/package.json packages/ui/package.json
+
+# Install production dependencies only (under emulation)
+RUN pnpm install --filter "{./apps/api}..." --prod --frozen-lockfile
+
+# ── Stage 3: Production ──────────────────────────────────────────────
 FROM node:20-alpine
 
 ENV YTDLP_PATH=/usr/bin/yt-dlp
@@ -48,9 +77,9 @@ COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/resources ./resources
 COPY --from=builder /app/apps/api/package.json ./package.json
 
-# Copy node_modules from builder stage
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+# Copy pruned node_modules from prod-deps stage
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/apps/api/node_modules ./apps/api/node_modules
 
 EXPOSE 3100
 
