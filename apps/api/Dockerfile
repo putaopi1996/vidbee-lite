@@ -10,12 +10,10 @@ WORKDIR /app
 # 1. Copy workspace configuration
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
-# 2. Copy all package.json files from the workspace (required for pnpm validation)
+# 2. Copy all EXISTING package.json files from the workspace (required for pnpm validation)
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
-COPY apps/desktop/package.json apps/desktop/package.json
 COPY apps/docs/package.json apps/docs/package.json
-COPY apps/extension/package.json apps/extension/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/downloader-core/package.json packages/downloader-core/package.json
 COPY packages/i18n/package.json packages/i18n/package.json
@@ -47,9 +45,7 @@ RUN apk add --no-cache python3 make g++
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
-COPY apps/desktop/package.json apps/desktop/package.json
 COPY apps/docs/package.json apps/docs/package.json
-COPY apps/extension/package.json apps/extension/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/downloader-core/package.json packages/downloader-core/package.json
 COPY packages/i18n/package.json packages/i18n/package.json
