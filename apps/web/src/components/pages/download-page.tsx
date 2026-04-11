@@ -128,31 +128,8 @@ export const DownloadPage = () => {
 		};
 	}, [refreshData]);
 
-	useEffect(() => {
-		if (!isApiReachable) {
-			return;
-		}
-
-		const source = new EventSource(eventsUrl);
-		const onChanged = () => {
-			void refreshData();
-		};
-		const onError = () => {
-			setIsApiReachable(false);
-			source.close();
-		};
-
-		source.addEventListener("task-updated", onChanged);
-		source.addEventListener("queue-updated", onChanged);
-		source.addEventListener("error", onError);
-
-		return () => {
-			source.removeEventListener("task-updated", onChanged);
-			source.removeEventListener("queue-updated", onChanged);
-			source.removeEventListener("error", onError);
-			source.close();
-		};
-	}, [isApiReachable, refreshData]);
+	// SSE is removed to prevent rapid refetch loops (DDOS) and zombie connections. 
+	// The 2s interval above is sufficient for real-time updates.
 
 	const historyRecords = useMemo(
 		() => allRecords.filter((record) => record.entryType === "history"),
