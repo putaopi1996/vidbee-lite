@@ -1,12 +1,14 @@
-# ── Stage 1: Build (Native Platform) ──────────────────────────────────
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+# ── Stage 1: Build ───────────────────────────────────────────────────
+FROM node:20-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
-# Use npm to install a specific pnpm 9 version for better stability under emulation
-RUN npm install -g pnpm@9.15.5
+RUN corepack enable
 
 WORKDIR /app
+
+# Install build tools for native modules (better-sqlite3)
+RUN apk add --no-cache python3 make g++
 
 # Copy lockfile and workspace config
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
@@ -16,39 +18,18 @@ COPY apps/api/package.json apps/api/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/downloader-core/package.json packages/downloader-core/package.json
 
-# Install dependencies for build (native x64 platform, fast and stable)
-RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile --ignore-scripts
+# Install all dependencies
+RUN pnpm install --filter "{./apps/api}..." --frozen-lockfile
 
 # Copy source code and build
 COPY apps/api apps/api
 COPY packages/db packages/db
 COPY packages/downloader-core packages/downloader-core
 
-# Build the API (esbuild runs natively here!)
+# Build the API
 RUN pnpm --filter ./apps/api run build
 
-# ── Stage 2: Prod-deps (Target Platform) ──────────────────────────────
-FROM node:20-alpine AS prod-deps
-
-ENV PNPM_HOME=/pnpm
-ENV PATH=${PNPM_HOME}:${PATH}
-RUN npm install -g pnpm@9.15.5
-
-WORKDIR /app
-
-# Install build tools for native compilation of better-sqlite3
-RUN apk add --no-cache python3 make g++
-
-# Copy lockfile and workspace config
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY apps/api/package.json apps/api/package.json
-COPY packages/db/package.json packages/db/package.json
-COPY packages/downloader-core/package.json packages/downloader-core/package.json
-
-# Install production dependencies only (under emulation, minimized workload)
-RUN pnpm install --filter "{./apps/api}..." --prod --frozen-lockfile
-
-# ── Stage 3: Production ──────────────────────────────────────────────
+# ── Stage 2: Production ──────────────────────────────────────────────
 FROM node:20-alpine
 
 ENV YTDLP_PATH=/usr/bin/yt-dlp
@@ -67,9 +48,9 @@ COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/resources ./resources
 COPY --from=builder /app/apps/api/package.json ./package.json
 
-# Copy pruned node_modules from prod-deps stage
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=prod-deps /app/apps/api/node_modules ./apps/api/node_modules
+# Copy node_modules from builder stage
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 
 EXPOSE 3100
 
