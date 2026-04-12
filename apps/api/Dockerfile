@@ -62,9 +62,10 @@ FROM node:20-bookworm-slim
 ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV NODE_ENV=production
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies (fetch latest yt-dlp)
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg python3 curl && rm -rf /var/lib/apt/lists/* && \
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates ffmpeg python3 curl && rm -rf /var/lib/apt/lists/* && \
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp && \
     chmod a+rx /usr/bin/yt-dlp
 
