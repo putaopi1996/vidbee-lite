@@ -9,6 +9,7 @@ WORKDIR /app
 
 # 1. Copy workspace configuration
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY scripts/prepare.mjs scripts/prepare.mjs
 
 # 2. Copy all EXISTING package.json files from the workspace (required for pnpm validation)
 COPY apps/api/package.json apps/api/package.json
@@ -43,6 +44,7 @@ RUN apk add --no-cache python3 make g++
 
 # Copy same set of package.json files
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY scripts/prepare.mjs scripts/prepare.mjs
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/docs/package.json apps/docs/package.json
