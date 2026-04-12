@@ -15,7 +15,7 @@
     "check:web": "pnpm --filter ./apps/web run check",
     "dev:docs": "pnpm --filter ./apps/docs dev",
     "build:docs": "pnpm --filter ./apps/docs build",
-    "prepare": "husky"
+    "prepare": "node ./scripts/prepare.mjs"
   },
   "devDependencies": {
     "husky": "^9.1.7"

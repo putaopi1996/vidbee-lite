@@ -1,10 +1,10 @@
-import { Button } from "@vidbee/ui/components/ui/button";
-import { CardContent, CardHeader } from "@vidbee/ui/components/ui/card";
-import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
 import {
 	buildFilePathCandidates,
 	normalizeSavedFileName,
 } from "@vidbee/downloader-core/download-file";
+import { Button } from "@vidbee/ui/components/ui/button";
+import { CardContent, CardHeader } from "@vidbee/ui/components/ui/card";
+import { Checkbox } from "@vidbee/ui/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -23,7 +23,7 @@ import { cn } from "@vidbee/ui/lib/cn";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { eventsUrl, orpcClient } from "../../lib/orpc-client";
+import { orpcClient } from "../../lib/orpc-client";
 import { readOrpcDownloadSettings } from "../../lib/orpc-download-settings";
 import { readWebSettings } from "../../lib/web-settings";
 import { DownloadDialog } from "../download/download-dialog";
@@ -128,7 +128,7 @@ export const DownloadPage = () => {
 		};
 	}, [refreshData]);
 
-	// SSE is removed to prevent rapid refetch loops (DDOS) and zombie connections. 
+	// SSE is removed to prevent rapid refetch loops (DDOS) and zombie connections.
 	// The 2s interval above is sufficient for real-time updates.
 
 	const historyRecords = useMemo(
@@ -339,7 +339,8 @@ export const DownloadPage = () => {
 			if (confirmAction.type === "delete-selected") {
 				const selectedHistoryRecords = allRecords.filter(
 					(record) =>
-						confirmAction.ids.includes(record.id) && record.entryType === "history",
+						confirmAction.ids.includes(record.id) &&
+						record.entryType === "history",
 				);
 
 				if (alsoDeleteFiles) {
