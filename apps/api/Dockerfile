@@ -51,8 +51,10 @@ COPY packages/downloader-core/package.json packages/downloader-core/package.json
 COPY packages/i18n/package.json packages/i18n/package.json
 COPY packages/ui/package.json packages/ui/package.json
 
-# Install production dependencies only (under emulation)
-RUN pnpm install --filter "{./apps/api}..." --prod --frozen-lockfile
+# Install production dependencies only (under emulation).
+# Disable husky in containers, but keep package install scripts enabled
+# so native modules like better-sqlite3 can still build/install.
+RUN HUSKY=0 pnpm install --filter "{./apps/api}..." --prod --frozen-lockfile
 
 # ── Stage 3: Production ──────────────────────────────────────────────
 FROM node:20-alpine
