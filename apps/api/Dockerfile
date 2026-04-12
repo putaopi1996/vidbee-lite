@@ -1,5 +1,5 @@
 # ── Stage 1: Build (Native Platform) ──────────────────────────────────
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-bookworm-slim AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
@@ -31,7 +31,7 @@ COPY packages/downloader-core packages/downloader-core
 RUN pnpm --filter ./apps/api run build
 
 # ── Stage 2: Prod-deps (Target Platform) ──────────────────────────────
-FROM node:20-alpine AS prod-deps
+FROM node:20-bookworm-slim AS prod-deps
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
@@ -40,7 +40,7 @@ RUN corepack enable
 WORKDIR /app
 
 # Install build tools for better-sqlite3
-RUN apk add --no-cache python3 make g++
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 # Copy same set of package.json files
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
@@ -57,14 +57,14 @@ COPY packages/ui/package.json packages/ui/package.json
 RUN pnpm install --filter "{./apps/api}..." --prod --frozen-lockfile
 
 # ── Stage 3: Production ──────────────────────────────────────────────
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 
 ENV YTDLP_PATH=/usr/bin/yt-dlp
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV NODE_ENV=production
 
 # Install runtime dependencies (fetch latest yt-dlp)
-RUN apk add --no-cache ffmpeg python3 curl && \
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg python3 curl && rm -rf /var/lib/apt/lists/* && \
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp && \
     chmod a+rx /usr/bin/yt-dlp
 
